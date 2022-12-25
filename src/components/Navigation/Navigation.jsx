@@ -5,11 +5,12 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Login from '../../pages/Login/Login';
 import Registration from '../../pages/Registration/Registration';
+import { Home } from '../../pages/Home/Home';
 
 
 const Drawer = createDrawerNavigator();
 
-const Navigation = ({ navigation }) => {
+const Navigation = () => {
 	const isAuth = false;
 
 	const onClickLogout = () => {};
@@ -82,8 +83,8 @@ const Navigation = ({ navigation }) => {
 const UnauthorizedMenu = () => {
 	return (
 		<Drawer.Navigator>
-			<Drawer.Screen name='Войти' component={Login} /> 
-			<Drawer.Screen name='Регистрация' component={Registration} />
+			<Drawer.Screen name='Login' component={Login} /> 
+			<Drawer.Screen name='Register' component={Registration} />
 		</Drawer.Navigator>
 	);
 };
@@ -91,8 +92,9 @@ const UnauthorizedMenu = () => {
 const AuthorizedMenu = () => {
    return (
 		<Drawer.Navigator>
-			<Drawer.Screen name='Написать статью' component={Registration} />
-			<Drawer.Screen name='Выйти' component={Login} /> 
+			<Drawer.Screen name='Home' component={Home} />
+			<Drawer.Screen name='CreateArticle' component={Registration} />
+			<Drawer.Screen name='Logout' component={Login} /> 
 		</Drawer.Navigator>
 	);
 }
