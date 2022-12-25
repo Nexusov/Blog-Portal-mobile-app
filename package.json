@@ -36,7 +36,8 @@
     "react-redux": "^8.0.5",
     "redux": "^4.2.0",
     "styled-components": "^5.3.6",
-    "teaset": "^0.7.5"
+    "teaset": "^0.7.5",
+    "expo-secure-store": "~12.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
