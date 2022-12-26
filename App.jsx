@@ -3,7 +3,12 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Alert, Text, View, FlatList } from 'react-native';
 import styled from 'styled-components';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+	createDrawerNavigator,
+	DrawerContentScrollView,
+	DrawerItemList,
+	DrawerItem,
+} from '@react-navigation/drawer';
 import * as SecureStore from 'expo-secure-store';
 
 import Navigation from './src/components/Navigation/Navigation';
@@ -12,9 +17,29 @@ import Login from './src/pages/Login/Login';
 import Registration from './src/pages/Registration/Registration';
 import { Home } from './src/pages/Home/Home';
 import Loader from './src/components/Loader/Loader';
-import api from "./src/apiClient";
+import api from './src/apiClient';
+import UserInfo from './src/components/UserInfo/UserInfo';
 
 const Drawer = createDrawerNavigator();
+
+const CustomDrawerContent = (props) => {
+	console.log(props);
+	return (
+		<AuthContext.Consumer>
+			{({ signOut, isAuth }) => (
+				<DrawerContentScrollView {...props}>
+					<DrawerItemList {...props} />
+					{isAuth && (
+						<DrawerItem
+						label={() => <Text style={{ color: 'red' }}>Выйти</Text>}
+							onPress={() => signOut().catch(console.error)}
+						/>
+					)}
+				</DrawerContentScrollView>
+			)}
+		</AuthContext.Consumer>
+	);
+};
 
 export default function App({ navigation }) {
 	const [state, dispatch] = React.useReducer(
@@ -53,6 +78,7 @@ export default function App({ navigation }) {
 			userToken: null,
 		}
 	);
+	const [user, setUser] = React.useState({});
 
 	React.useEffect(() => {
 		const bootstrapAsync = async () => {
@@ -60,53 +86,115 @@ export default function App({ navigation }) {
 
 			try {
 				userToken = await SecureStore.getItemAsync('userToken');
+				api.defaults.headers.common[
+					'Authorization'
+				] = `Bearer ${userToken}`;
 			} catch (e) {}
 
 			dispatch({ type: 'RESTORE_TOKEN', token: userToken });
 		};
 
-		bootstrapAsync();
+		bootstrapAsync().catch(console.error);
 	}, []);
 
 	const authContext = React.useMemo(
 		() => ({
 			signIn: async ({ email, password }) => {
-            console.log(email, password);
+				console.log(email, password);
 				dispatch({ type: 'LOADING' });
 				try {
 					const loginResponse = await api.post('auth/login', {
 						email,
 						password,
 					});
-					console.log(loginResponse);
+					console.log(loginResponse.data);
+
+					const { token, ...user } = loginResponse.data;
+
+					api.defaults.headers.common[
+						'Authorization'
+					] = `Bearer ${token}`;
+
+					setUser(user);
+					await SecureStore.setItemAsync('userToken', token);
+
 					Alert.alert('Success', 'You are in!');
+
 					dispatch({
 						type: 'SIGN_IN',
-						token: loginResponse.data.token,
+						token,
 					});
 				} catch (error) {
+					api.defaults.headers.common['Authorization'] = null;
+
 					Alert.alert('Error', "Couldn't log in");
+
 					console.error(error);
+
+					dispatch({ type: 'SIGN_OUT' });
 				}
 			},
-			signOut: () => dispatch({ type: 'SIGN_OUT' }),
-			signUp: async ({ login, password }) => {
-				// In a production app, we need to send user data to server and get a token
-				// We will also need to handle errors if sign up failed
-				// After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
-				// In the example, we'll use a dummy token
+			signOut: async () => {
+				api.defaults.headers.common['Authorization'] = null;
 
-				dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+				await SecureStore.deleteItemAsync('userToken');
+
+				dispatch({ type: 'SIGN_OUT' });
+			},
+			signUp: async ({ fullName, email, password, avatarUrl }) => {
+				dispatch({ type: 'LOADING' });
+				console.log(fullName, email, password, avatarUrl);
+
+				try {
+					const regResponse = await api.post('auth/register', {
+						fullName,
+						email,
+						password,
+						avatarUrl,
+					});
+					console.log(regResponse.data);
+
+					const { token, ...user } = regResponse.data;
+
+					api.defaults.headers.common[
+						'Authorization'
+					] = `Bearer ${token}`;
+
+					setUser(user);
+					await SecureStore.setItemAsync('userToken', token);
+
+					Alert.alert('Success', 'You are registered!');
+
+					dispatch({
+						type: 'SIGN_IN',
+						token,
+					});
+				} catch (error) {
+					api.defaults.headers.common['Authorization'] = null;
+
+					console.error(error.response.data);
+
+					Alert.alert('Error', "Couldn't create an account");
+
+					dispatch({ type: 'SIGN_OUT' });
+				}
 			},
 		}),
 		[]
 	);
 
 	return (
-		<AuthContext.Provider value={authContext}>
+		<AuthContext.Provider
+			value={{ ...authContext, isAuth: state.userToken !== null, user }}
+		>
 			{/* <FlatList data={items} renderItem={({ item }) => <Post title={item.title} imageUrl={item.imageUrl} createdAt={item.createdAt} /> } />  */}
 			<NavigationContainer>
-				<Drawer.Navigator>
+				<Drawer.Navigator
+					isAuth={state.userTOken !== null}
+					drawerContent={(props) => (
+						<CustomDrawerContent {...props} />
+					)}
+				>
 					{state.isLoading ? (
 						<Drawer.Screen
 							name='Splash'
@@ -123,12 +211,12 @@ export default function App({ navigation }) {
 							<Drawer.Screen
 								name='CreateArticle'
 								component={Registration}
-								options={{ title: 'Добавить статью' }}
+								options={{ title: 'Написать статью' }}
 							/>
 							<Drawer.Screen
-								name='Logout'
-								component={Login}
-								options={{ title: 'Выйти' }}
+								name='Profile'
+								component={UserInfo}
+								options={{ title: 'Профиль' }}
 							/>
 						</>
 					) : (
