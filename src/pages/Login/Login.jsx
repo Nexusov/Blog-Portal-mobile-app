@@ -33,7 +33,7 @@ export default function Login({ navigation }) {
 			});
 			console.log(loginResponse);
 			Alert.alert('Success', 'You are in!');
-         navigation.navigate('Home');
+			navigation.navigate('Home');
 		} catch (error) {
 			console.error(error.response.data);
 			Alert.alert('Error', "Couldn't log in");
@@ -44,27 +44,26 @@ export default function Login({ navigation }) {
 
 	return (
 		<AuthContext.Consumer>
-         {({signIn}) => <View>
-            <Title>Вход в аккаунт</Title>
-            <Input
-               placeholder='E-Mail'
-               onChangeText={setEmail}
-            />
-            <Input
-               placeholder='Пароль'
-               onChangeText={setPassword}
-            />
-            <TouchableOpacity
-               onPress={() => signIn({ email, password })}
-               style={s.buttonContainer}
-               activeOpacity={0.7}
-            >
-               <Text style={s.buttonText}>Войти</Text>
-            </TouchableOpacity>
-            {/*isLoading && <Loader />*/}
-		   </View>
-      }
-      </AuthContext.Consumer>
+			{({ signIn }) => (
+				<View>
+					<Title>Вход в аккаунт</Title>
+					<Input placeholder='E-Mail' onChangeText={setEmail} />
+					<Input
+						placeholder='Пароль'
+						onChangeText={setPassword}
+						secureTextEntry
+					/>
+					<TouchableOpacity
+						onPress={() => signIn({ email, password })}
+						style={s.buttonContainer}
+						activeOpacity={0.7}
+					>
+						<Text style={s.buttonText}>Войти</Text>
+					</TouchableOpacity>
+					{/*isLoading && <Loader />*/}
+				</View>
+			)}
+		</AuthContext.Consumer>
 	);
 }
 
