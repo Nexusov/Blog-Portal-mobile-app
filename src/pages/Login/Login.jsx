@@ -60,7 +60,7 @@ export default function Login({ navigation }) {
 					>
 						<Text style={s.buttonText}>Войти</Text>
 					</TouchableOpacity>
-					{/*isLoading && <Loader />*/}
+					{isLoading && <Loader />}
 				</View>
 			)}
 		</AuthContext.Consumer>
