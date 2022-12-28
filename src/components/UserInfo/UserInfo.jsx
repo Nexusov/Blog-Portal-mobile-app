@@ -10,17 +10,18 @@ const SmallAvatar = styled(CustomImage)`
 
 const UserInfo = ({ avatarUrl, fullName, additionalText, fullSize }) => {
 	return (
-		<View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
+		<View style={{ padding: 5 }}>
 			{fullSize ? (
-				<CustomImage source={{ uri: avatarUrl }}/>
+            <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+				   <CustomImage source={{ uri: avatarUrl }}/>
+               <Text style={{ fontSize: 17 }}>{fullName}</Text>
+            </View>
 			) : (
-				<SmallAvatar source={{ uri: avatarUrl, }} />
+            <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+				   <SmallAvatar source={{ uri: avatarUrl, }} />
+               <Text style={{ fontSize: 17 }}>{fullName}</Text>
+            </View>
 			)}
-
-			<View>
-				<Text style={{ fontSize: 17 }}>{fullName}</Text>
-				{additionalText && <Text style={{ color: 'grey' }}>{additionalText}</Text>}
-			</View>
 		</View>
 	);
 };
