@@ -7,28 +7,34 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	Alert,
+	FlatList,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import api from '../../apiClient';
 import Post from '../../components/Post/Post';
 import Loader from '../../components/Loader/Loader';
 import AuthContext from '../../contexts/AuthContext';
+import { RefreshControl } from 'react-native-web';
 
 export const Home = () => {
-	const [isLoading, setIsLoading] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
 	const [posts, setPosts] = useState([]);
+
+	const fetchPosts = async () => {
+		setIsLoading(true);
+
+		try {
+			const postsResponse = await api.get('/posts');
+			setPosts(postsResponse.data);
+			console.log(postsResponse.data);
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	useEffect(() => {
 		const initialize = async () => {
-			setIsLoading(true);
-
-			try {
-				const postsResponse = await api.get('/posts');
-				setPosts(postsResponse.data);
-            console.log(postsResponse.data);
-			} finally {
-				setIsLoading(false);
-			}
+			await fetchPosts();
 		};
 
 		initialize().catch(console.error);
@@ -37,19 +43,18 @@ export const Home = () => {
 	return (
 		<AuthContext.Consumer>
 			{({ user }) => (
-				<View>
-					{isLoading ? (
-						<Loader />
-					) : (
-						posts.map((post) => (
-							<Post
-								{...post}
-								key={post._id}
-								isEditable={user._id === post.user._id}
-							/>
-						))
+				<FlatList
+					data={posts}
+					renderItem={({ item: post }) => (
+						<Post
+							{...post}
+							key={post._id}
+							isEditable={user._id === post.user._id}
+						/>
 					)}
-				</View>
+					onRefresh={fetchPosts}
+					refreshing={isLoading}
+				/>
 			)}
 		</AuthContext.Consumer>
 	);
