@@ -1,6 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Alert, Text, View, FlatList } from 'react-native';
+import { Alert, Text, View, FlatList } from 'react-native';
 import styled from 'styled-components';
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -19,11 +20,14 @@ import { Home } from './src/pages/Home/Home';
 import Loader from './src/components/Loader/Loader';
 import api from './src/apiClient';
 import UserInfo from './src/components/UserInfo/UserInfo';
+import Profile from './src/pages/Profile/Profile';
+import FullPost from './src/pages/FullPost/FullPost';
+import AddPost from './src/pages/AddPost/AddPost';
+import EditPost from './src/pages/EditPost/EditPost';
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = (props) => {
-	console.log(props);
 	return (
 		<AuthContext.Consumer>
 			{({ signOut, isAuth }) => (
@@ -31,7 +35,9 @@ const CustomDrawerContent = (props) => {
 					<DrawerItemList {...props} />
 					{isAuth && (
 						<DrawerItem
-						label={() => <Text style={{ color: 'red' }}>Выйти</Text>}
+							label={() => (
+								<Text style={{ color: 'red' }}>Выйти</Text>
+							)}
 							onPress={() => signOut().catch(console.error)}
 						/>
 					)}
@@ -82,14 +88,29 @@ export default function App({ navigation }) {
 
 	React.useEffect(() => {
 		const bootstrapAsync = async () => {
-			let userToken;
+			let userToken = null;
 
 			try {
 				userToken = await SecureStore.getItemAsync('userToken');
 				api.defaults.headers.common[
-					'Authorization'
+					'authorization'
 				] = `Bearer ${userToken}`;
 			} catch (e) {}
+
+			if (userToken !== null) {
+				try {
+					const userInfo = await api({
+						method: 'GET',
+						url: '/auth/me',
+					});
+
+					setUser(userInfo);
+				} catch (e) {
+					console.error(e.request);
+					await SecureStore.deleteItemAsync('userToken');
+					userToken = null;
+				}
+			}
 
 			dispatch({ type: 'RESTORE_TOKEN', token: userToken });
 		};
@@ -210,13 +231,31 @@ export default function App({ navigation }) {
 							/>
 							<Drawer.Screen
 								name='CreateArticle'
-								component={Registration}
+								component={AddPost}
 								options={{ title: 'Написать статью' }}
 							/>
 							<Drawer.Screen
 								name='Profile'
-								component={UserInfo}
+								component={Profile}
 								options={{ title: 'Профиль' }}
+							/>
+							<Drawer.Screen
+								name='FullPost'
+								getComponent={() => FullPost}
+								options={{
+									title: 'Пост',
+									drawerItemStyle: { height: 0 },
+								}}
+								getId={({ params }) => params.id}
+							/>
+							<Drawer.Screen
+								name='EditPost'
+								getComponent={() => EditPost}
+								options={{
+									title: 'Изменить пост',
+									drawerItemStyle: { height: 0 },
+								}}
+								getId={({ params }) => params.id}
 							/>
 						</>
 					) : (
@@ -239,12 +278,3 @@ export default function App({ navigation }) {
 		</AuthContext.Provider>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-});
