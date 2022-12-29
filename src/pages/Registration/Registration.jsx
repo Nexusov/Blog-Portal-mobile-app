@@ -9,24 +9,16 @@ import {
 	TouchableOpacity,
 	Alert,
 } from 'react-native';
-
-import api from '../../apiClient';
 import Loader from '../../components/Loader/Loader';
 import AuthContext from '../../contexts/AuthContext';
 
-import BootstrapStyleSheet from 'react-native-bootstrap-styles';
 import styled from 'styled-components';
-
-/* const bootstrapStyleSheet = new BootstrapStyleSheet();
-const { styles } = bootstrapStyleSheet;  */
 
 const Registration = ({ onPress }) => {
 	const [fullName, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [avatarUrl, setAvatarUrl] = useState(
-		'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'
-	);
+	const [avatarUrl, setAvatarUrl] = useState('https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png');
 	const [isLoading, setIsLoading] = useState(false);
 
 	return (
@@ -35,25 +27,16 @@ const Registration = ({ onPress }) => {
 				<View>
 					<View style={{ flexDirection: 'row' }}>
 						<View style={{ flexDirection: 'column' }}>
-							<Avatar
-								source={{
-									uri: 'https://ionicframework.com/docs/icons/logo-react-icon.png',
-								}}
-							/>
-							<InputURL
-								placeholder='Ссылка на картинку'
-								onChangeText={setAvatarUrl}
-							/>
+							<Avatar source={{ uri: 'https://ionicframework.com/docs/icons/logo-react-icon.png' }}/>
+							<InputURL placeholder='Ссылка на картинку' onChangeText={setAvatarUrl} />
 						</View>
 						<Title>Создание аккаунта</Title>
 					</View>
+
 					<Input placeholder='Имя' onChangeText={setName} />
 					<Input placeholder='E-Mail' onChangeText={setEmail} />
-					<Input
-						placeholder='Пароль'
-						onChangeText={setPassword}
-						secureTextEntry
-					/>
+					<Input placeholder='Пароль' onChangeText={setPassword} secureTextEntry />
+
 					<TouchableOpacity
 						onPress={() =>
 							signUp({ fullName, email, password, avatarUrl })
@@ -63,6 +46,7 @@ const Registration = ({ onPress }) => {
 					>
 						<Text style={s.buttonText}>Зарегистрироваться</Text>
 					</TouchableOpacity>
+
 					{isLoading && <Loader />}
 				</View>
 			)}
@@ -121,40 +105,4 @@ const s = StyleSheet.create({
 	},
 });
 
-// export const Registration = () => {
-//    return (
-//    <PaperRoot>
-//       <Title variant="h5">
-//          Создание аккаунта
-//       </Title>
-//       <AvatarDiv>
-//          <Avatar sx={{ width: 100, height: 100 }} />
-//       </AvatarDiv>
-//       <CustomField label="Полное имя" fullWidth />
-//       <CustomField label="E-Mail" fullWidth />
-//       <CustomField label="Пароль" fullWidth />
-//       <Button size="large" variant="contained" fullWidth>
-//          Зарегистрироваться
-//       </Button>
-//    </PaperRoot>
-//    );
-// };
-
 export default Registration;
-
-// const PaperRoot = styled.Paper`
-//    width: 400px;
-//    padding: 50px;
-//    border: 1px solid #dedede;
-//    margin: 50px auto;
-// `;
-
-// const CustomField = styled.TextField`
-//    margin-bottom: 20px !important;
-// `;
-
-// const Title = styled.Typography`
-//    text-align: center !important;
-//    font-weight: bold !important;
-//    margin-bottom: 30px !important;
-// `;

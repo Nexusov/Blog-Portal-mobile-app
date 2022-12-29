@@ -9,12 +9,10 @@ import {
 	TouchableOpacity,
 	Alert,
 } from 'react-native';
-
-import api from '../../apiClient';
 import Loader from '../../components/Loader/Loader';
 import AuthContext from '../../contexts/AuthContext';
 
-import BootstrapStyleSheet from 'react-native-bootstrap-styles';
+
 import styled from 'styled-components';
 
 export default function Login({ navigation }) {
@@ -22,37 +20,14 @@ export default function Login({ navigation }) {
 	const [password, setPassword] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 
-	const handleLogin = async (e) => {
-		setIsLoading(true);
-		console.log(email);
-		console.log(password);
-		try {
-			const loginResponse = await api.post('auth/login', {
-				email,
-				password,
-			});
-			console.log(loginResponse);
-			Alert.alert('Success', 'You are in!');
-			navigation.navigate('Home');
-		} catch (error) {
-			console.error(error.response.data);
-			Alert.alert('Error', "Couldn't log in");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
 	return (
 		<AuthContext.Consumer>
 			{({ signIn }) => (
 				<View>
 					<Title>Вход в аккаунт</Title>
 					<Input placeholder='E-Mail' onChangeText={setEmail} />
-					<Input
-						placeholder='Пароль'
-						onChangeText={setPassword}
-						secureTextEntry
-					/>
+					<Input placeholder='Пароль' onChangeText={setPassword} secureTextEntry />
+
 					<TouchableOpacity
 						onPress={() => signIn({ email, password })}
 						style={s.buttonContainer}
@@ -60,6 +35,7 @@ export default function Login({ navigation }) {
 					>
 						<Text style={s.buttonText}>Войти</Text>
 					</TouchableOpacity>
+
 					{isLoading && <Loader />}
 				</View>
 			)}

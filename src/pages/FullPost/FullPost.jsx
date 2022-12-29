@@ -12,14 +12,12 @@ import {
 } from 'react-native';
 
 import api from '../../apiClient';
-import Post from '../../components/Post/Post';
 import AuthContext from '../../contexts/AuthContext';
 import Loader from '../../components/Loader/Loader';
-import CustomImage from '../../components/CustomImage/CustomImage';
 import UserInfo from '../../components/UserInfo/UserInfo';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
 import Eye from '../../icons/Eye/Eye';
+
 import styled from 'styled-components';
 
 const FullPost = ({ route, navigation }) => {
@@ -91,52 +89,51 @@ const FullPost = ({ route, navigation }) => {
 	};
 
 	return (
-				<View style={{ backgroundColor: 'white', padding: 5, borderRadius: 20, elevation: 5, shadowColor: '#171717', margin: 5 }}>
-				{imageUrl && (
-					<Banner
-						source={{ uri: imageUrl }}
-						style={{ resizeMode: 'stretch' }}
-					/>
-				)}
-				<Title>{title}</Title>
-				<UserInfo
-					{...creator}
-					additionalText={new Date(createdAt)?.toLocaleDateString(
-						'ru'
-					)}
-				/>
-				<Tags style={{ color: '#0000EE' }}>
-					{tags.map((name) => `#${name}`).join(' ')}
-				</Tags>
+		<View style={{ backgroundColor: 'white', padding: 5, borderRadius: 20, elevation: 5, shadowColor: '#171717', margin: 5 }}>
 
-				<Text style={{ fontSize: 18, lineHeight: 24, marginBottom: 5 }}>
-					{text}
-				</Text>
+			{imageUrl &&  <Banner source={{ uri: imageUrl }} style={{ resizeMode: 'stretch' }} /> }
 
-				<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-					<Eye />
-					<Text style={{ color: 'grey' }}> {viewsCount} </Text>
+			<Title>{title}</Title>
+
+			<UserInfo
+				{...creator}
+				additionalText={new Date(createdAt)?.toLocaleDateString('ru')}
+			/>
+
+			<Tags style={{ color: '#0000EE' }}>
+				{tags.map((name) => `#${name}`).join(' ')}
+			</Tags>
+
+			<Text style={{ fontSize: 18, lineHeight: 24, marginBottom: 5 }}>
+				{text}
+			</Text>
+
+			<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+				<Eye />
+				<Text style={{ color: 'grey' }}> {viewsCount} </Text>
+			</View>
+
+			{isEditable && (
+				<View>
+					<TouchableOpacity
+						onPress={onClickRemove}
+						activeOpacity={0.7}
+						style={s.deleteButton}
+					>
+						<Text style={s.buttonText}>Удалить пост</Text>
+					</TouchableOpacity>
+               
+					<TouchableOpacity
+						onPress={onClickEdit}
+						activeOpacity={0.7}
+						style={s.editButton}
+					>
+						<Text style={s.buttonText}>Изменить пост</Text>
+					</TouchableOpacity>
 				</View>
+			)}
 
-				{isEditable && (
-					<View>
-						<TouchableOpacity
-							onPress={onClickRemove}
-							activeOpacity={0.7}
-							style={s.deleteButton}
-						>
-							<Text style={s.buttonText}>Удалить пост</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={onClickEdit}
-							activeOpacity={0.7}
-							style={s.editButton}
-						>
-							<Text style={s.buttonText}>Изменить пост</Text>
-						</TouchableOpacity>
-					</View>
-				)}
-				</View>
+		</View>
 	);
 };
 

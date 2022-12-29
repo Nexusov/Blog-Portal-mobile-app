@@ -1,12 +1,7 @@
 import { Text, View, Image } from 'react-native';
 import CustomImage from '../CustomImage/CustomImage';
-import styled from 'styled-components';
 
-const SmallAvatar = styled(CustomImage)`
-	width: 50px;
-	height: 50px;
-	margin-bottom: 0px;
-`;
+import styled from 'styled-components';
 
 const UserInfo = ({ avatarUrl, fullName, additionalText, fullSize }) => {
 	return (
@@ -18,7 +13,7 @@ const UserInfo = ({ avatarUrl, fullName, additionalText, fullSize }) => {
             </View>
 			) : (
             <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-				   <SmallAvatar source={{ uri: avatarUrl, }} />
+				   <SmallAvatar source={{ uri: avatarUrl }} />
                <Text style={{ fontSize: 17 }}>{fullName}</Text>
             </View>
 			)}
@@ -27,3 +22,10 @@ const UserInfo = ({ avatarUrl, fullName, additionalText, fullSize }) => {
 };
 
 export default UserInfo;
+
+
+const SmallAvatar = styled(CustomImage)`
+	width: 50px;
+	height: 50px;
+	margin-bottom: 0px;
+`;

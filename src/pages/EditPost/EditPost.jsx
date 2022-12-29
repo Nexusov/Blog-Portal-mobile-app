@@ -78,7 +78,6 @@ const EditPost = ({ navigation, route }) => {
 
 	return (
 		<KeyboardAvoidingView behavior='height'>
-			{/* <Title>Создание статьи</Title> */}
 
 			<Input
 				placeholder='Заголовок'
@@ -112,7 +111,9 @@ const EditPost = ({ navigation, route }) => {
 			>
 				<Text style={s.buttonText}>Изменить</Text>
 			</TouchableOpacity>
+
 			{loading && <Loader />}
+         
 		</KeyboardAvoidingView>
 	);
 };

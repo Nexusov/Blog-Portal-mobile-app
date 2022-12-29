@@ -1,8 +1,6 @@
 import React from 'react';
-import axios from 'axios';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, Text, View, FlatList } from 'react-native';
-import styled from 'styled-components';
 import { NavigationContainer } from '@react-navigation/native';
 import {
 	createDrawerNavigator,
@@ -12,14 +10,12 @@ import {
 } from '@react-navigation/drawer';
 import * as SecureStore from 'expo-secure-store';
 
-import Navigation from './src/components/Navigation/Navigation';
 import AuthContext from './src/contexts/AuthContext';
 import Login from './src/pages/Login/Login';
 import Registration from './src/pages/Registration/Registration';
 import { Home } from './src/pages/Home/Home';
 import Loader from './src/components/Loader/Loader';
 import api from './src/apiClient';
-import UserInfo from './src/components/UserInfo/UserInfo';
 import Profile from './src/pages/Profile/Profile';
 import FullPost from './src/pages/FullPost/FullPost';
 import AddPost from './src/pages/AddPost/AddPost';
@@ -35,9 +31,7 @@ const CustomDrawerContent = (props) => {
 					<DrawerItemList {...props} />
 					{isAuth && (
 						<DrawerItem
-							label={() => (
-								<Text style={{ color: 'red' }}>Выйти</Text>
-							)}
+							label={() => <Text style={{ color: 'red' }}>Выйти</Text>}
 							onPress={() => signOut().catch(console.error)}
 						/>
 					)}
@@ -47,7 +41,7 @@ const CustomDrawerContent = (props) => {
 	);
 };
 
-export default function App({ navigation }) {
+export default function App() {
 	const [state, dispatch] = React.useReducer(
 		(prevState, action) => {
 			switch (action.type) {
@@ -84,17 +78,16 @@ export default function App({ navigation }) {
 			userToken: null,
 		}
 	);
+
 	const [user, setUser] = React.useState({});
 
 	React.useEffect(() => {
-		const bootstrapAsync = async () => {
+		const saveToken = async () => {
 			let userToken = null;
 
 			try {
 				userToken = await SecureStore.getItemAsync('userToken');
-				api.defaults.headers.common[
-					'authorization'
-				] = `Bearer ${userToken}`;
+				api.defaults.headers.common['authorization'] = `Bearer ${userToken}`;
 			} catch (e) {}
 
 			if (userToken !== null) {
@@ -115,7 +108,7 @@ export default function App({ navigation }) {
 			dispatch({ type: 'RESTORE_TOKEN', token: userToken });
 		};
 
-		bootstrapAsync().catch(console.error);
+		saveToken().catch(console.error);
 	}, []);
 
 	const authContext = React.useMemo(
@@ -132,9 +125,7 @@ export default function App({ navigation }) {
 
 					const { token, ...user } = loginResponse.data;
 
-					api.defaults.headers.common[
-						'Authorization'
-					] = `Bearer ${token}`;
+					api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
 					setUser(user);
 					await SecureStore.setItemAsync('userToken', token);
@@ -155,6 +146,7 @@ export default function App({ navigation }) {
 					dispatch({ type: 'SIGN_OUT' });
 				}
 			},
+
 			signOut: async () => {
 				api.defaults.headers.common['Authorization'] = null;
 
@@ -162,6 +154,7 @@ export default function App({ navigation }) {
 
 				dispatch({ type: 'SIGN_OUT' });
 			},
+
 			signUp: async ({ fullName, email, password, avatarUrl }) => {
 				dispatch({ type: 'LOADING' });
 				console.log(fullName, email, password, avatarUrl);
@@ -177,9 +170,7 @@ export default function App({ navigation }) {
 
 					const { token, ...user } = regResponse.data;
 
-					api.defaults.headers.common[
-						'Authorization'
-					] = `Bearer ${token}`;
+					api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
 					setUser(user);
 					await SecureStore.setItemAsync('userToken', token);
@@ -200,15 +191,11 @@ export default function App({ navigation }) {
 					dispatch({ type: 'SIGN_OUT' });
 				}
 			},
-		}),
-		[]
+		}), []
 	);
 
 	return (
-		<AuthContext.Provider
-			value={{ ...authContext, isAuth: state.userToken !== null, user }}
-		>
-			{/* <FlatList data={items} renderItem={({ item }) => <Post title={item.title} imageUrl={item.imageUrl} createdAt={item.createdAt} /> } />  */}
+		<AuthContext.Provider value={{ ...authContext, isAuth: state.userToken !== null, user }} >
 			<NavigationContainer>
 				<Drawer.Navigator
 					isAuth={state.userTOken !== null}
@@ -244,7 +231,7 @@ export default function App({ navigation }) {
 								getComponent={() => FullPost}
 								options={{
 									title: 'Пост',
-									drawerItemStyle: { height: 0 },
+									drawerItemStyle: {height: 0},
 								}}
 								getId={({ params }) => params.id}
 							/>

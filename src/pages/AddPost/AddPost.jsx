@@ -58,13 +58,12 @@ const AddPost = ({ navigation }) => {
 
 	return (
 		<KeyboardAvoidingView behavior="height">
-			{/* <Title>Создание статьи</Title> */}
-
 			<Input
 				placeholder='Заголовок'
 				onChangeText={setTitle}
 				value={title}
 			/>
+         
 			<Input
 				placeholder='Ссылка на картинку'
 				onChangeText={setImageUrl}

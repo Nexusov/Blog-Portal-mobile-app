@@ -4,7 +4,6 @@ import UserInfo from '../UserInfo/UserInfo';
 import CustomImage from '../CustomImage/CustomImage';
 import api from '../../apiClient';
 import { useNavigation } from '@react-navigation/native';
-import AuthContext from '../../contexts/AuthContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Eye from '../../icons/Eye/Eye';
 
@@ -44,32 +43,26 @@ const Post = ({
    
 	return (
 		<TouchableWithoutFeedback onPress={gotoFullPost}>
-		<PostWrapper style={styles.shadow}>
-            {imageUrl && (
-               <CustomImage source={{uri: imageUrl}}/>
-            )}
-				<PostDetails>
-					<Title>{title}</Title>
-               {/* <UserInfo {...creator} additionalText={new Date(createdAt)?.toLocaleDateString("ru")} /> */}
-					
-					<Text style={{ fontSize: 16}}>{isFullPost ? text : text.slice(0, 100)}</Text>
-					{children && (
-						<View>{children}</View>
-					)}
-
+		   <PostWrapper style={styles.shadow}>
+            {imageUrl &&  <CustomImage source={{uri: imageUrl}}/> }
+		   	<PostDetails>
+		   		<Title>{title}</Title>
+		   		<Text style={{ fontSize: 16}}>{isFullPost ? text : text.slice(0, 100)}</Text>
+		   		{children && <View>{children}</View>}
+               
                <View>
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
                      <Eye />
-				         <Text style={{ color: 'grey' }}> {viewsCount} </Text>
+		   		      <Text style={{ color: 'grey' }}> {viewsCount} </Text>
                   </View>
-               <Tags style={{ color: '#0000EE' }}>{tags.map((name) => `#${name}`).join(' ')}</Tags>
+
+                  <Tags style={{ color: '#0000EE' }}>{tags.map((name) => `#${name}`).join(' ')}</Tags>
 
                   {isFullPost && (
-                  <TouchableOpacity onPress={gotoFullPost} activeOpacity={0.7}>
-                     <Text>Подробнее</Text>
-                  </TouchableOpacity>
+                     <TouchableOpacity onPress={gotoFullPost} activeOpacity={0.7}>
+                        <Text>Подробнее</Text>
+                     </TouchableOpacity>
                   )}
-                  
 
                   {isEditable && isFullPost && (
                   <View>
@@ -78,18 +71,16 @@ const Post = ({
                      </TouchableOpacity>
                   </View>
 		            )}
-				   </View>
+		   	   </View>
 
-				</PostDetails>
-
-		</PostWrapper>
+		   	</PostDetails>
+		   </PostWrapper>
 		</TouchableWithoutFeedback>
 	);
 };
 
-
-
 export default Post;
+
 
 const PostWrapper = styled.View`
    flex-direction: row;

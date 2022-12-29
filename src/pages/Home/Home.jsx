@@ -12,9 +12,8 @@ import {
 import { useState, useEffect } from 'react';
 import api from '../../apiClient';
 import Post from '../../components/Post/Post';
-import Loader from '../../components/Loader/Loader';
 import AuthContext from '../../contexts/AuthContext';
-import { RefreshControl } from 'react-native-web';
+
 
 export const Home = () => {
 	const [isLoading, setIsLoading] = useState(true);
